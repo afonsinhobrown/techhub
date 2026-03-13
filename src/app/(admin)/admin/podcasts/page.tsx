@@ -1,10 +1,10 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Play, ExternalLink } from "lucide-react";
+import { Plus, Edit, Trash2, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { getPodcastEpisodes, deletePodcastEpisode } from "@/lib/podcast";
 
@@ -60,7 +60,7 @@ export default async function AdminPodcastsPage() {
                       <tr key={episode.id} className="border-b border-border/50 hover:bg-muted/50">
                         <td className="py-4 px-6">
                           <Badge variant="secondary" className="bg-purple-600/20 text-purple-400">
-                            EP {episode.episodeNumber.toString().padStart(2, "0")}
+                            EP {episode.episode_number.toString().padStart(2, "0")}
                           </Badge>
                         </td>
                         <td className="py-4 px-6">
@@ -72,20 +72,20 @@ export default async function AdminPodcastsPage() {
                         </td>
                         <td className="py-4 px-6">
                           <div className="flex gap-2">
-                            {episode.spotifyUrl && (
-                              <a href={episode.spotifyUrl} target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-green-300">
+                            {episode.spotify_url && (
+                              <a href={episode.spotify_url} target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-green-300">
                                 <ExternalLink className="w-4 h-4" />
                               </a>
                             )}
-                            {episode.appleUrl && (
-                              <a href={episode.appleUrl} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300">
+                            {episode.apple_url && (
+                              <a href={episode.apple_url} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300">
                                 <ExternalLink className="w-4 h-4" />
                               </a>
                             )}
                           </div>
                         </td>
                         <td className="py-4 px-6 text-sm text-muted-foreground">
-                          {episode.publishedAt ? new Date(episode.publishedAt).toLocaleDateString("pt-BR") : "Não publicado"}
+                          {episode.published_at ? new Date(episode.published_at).toLocaleDateString("pt-BR") : "Não publicado"}
                         </td>
                         <td className="py-4 px-6">
                           <div className="flex items-center justify-end gap-2">

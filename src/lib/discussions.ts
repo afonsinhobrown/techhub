@@ -37,6 +37,11 @@ export async function getDiscussions(limit?: number): Promise<DiscussionWithTime
   }));
 }
 
+// Buscar discussões públicas (alias para compatibilidade)
+export async function getPublicDiscussions(limit?: number): Promise<DiscussionWithTime[]> {
+  return getDiscussions(limit);
+}
+
 // Buscar discussão por ID
 export async function getDiscussionById(id: string): Promise<discussions | null> {
   return db.discussions.findUnique({

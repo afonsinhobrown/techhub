@@ -183,16 +183,16 @@ export default async function PodcastPage() {
                               variant="secondary"
                               className="bg-purple-600/20 text-purple-400"
                             >
-                              EP {episode.episodeNumber.toString().padStart(2, "0")}
+                              EP {episode.episode_number.toString().padStart(2, "0")}
                             </Badge>
                             <span className="flex items-center gap-1 text-sm text-muted-foreground">
                               <Clock className="w-3 h-3" />
                               {formatDuration(episode.duration)}
                             </span>
-                            {episode.publishedAt && (
+                            {episode.published_at && (
                               <span className="flex items-center gap-1 text-sm text-muted-foreground">
                                 <Calendar className="w-3 h-3" />
-                                {new Date(episode.publishedAt).toLocaleDateString("pt-BR")}
+                                {new Date(episode.published_at).toLocaleDateString("pt-BR")}
                               </span>
                             )}
                           </div>
@@ -206,9 +206,9 @@ export default async function PodcastPage() {
                           </p>
 
                           <div className="flex gap-3">
-                            {episode.spotifyUrl && (
+                            {episode.spotify_url && (
                               <a
-                                href={episode.spotifyUrl}
+                                href={episode.spotify_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1"
@@ -217,9 +217,9 @@ export default async function PodcastPage() {
                                 Spotify
                               </a>
                             )}
-                            {episode.appleUrl && (
+                            {episode.apple_url && (
                               <a
-                                href={episode.appleUrl}
+                                href={episode.apple_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1"

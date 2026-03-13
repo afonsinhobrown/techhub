@@ -1,11 +1,10 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { getAdminSubscribers } from "@/lib/admin";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default async function AdminAssinantesPage() {
+  const { getAdminSubscribers } = await import("@/lib/admin");
   const subscribers = await getAdminSubscribers();
 
   return (
@@ -25,7 +24,7 @@ export default async function AdminAssinantesPage() {
             </div>
             <div className="flex items-center gap-4">
               <p className="text-sm text-muted-foreground">
-                Total: <span className="font-bold text-foreground">{subscribers.length}</span> | 
+                Total: <span className="font-bold text-foreground">{subscribers.length}</span> |
                 Confirmados: <span className="font-bold text-green-400">{subscribers.filter(s => s.confirmed).length}</span>
               </p>
             </div>
@@ -56,10 +55,10 @@ export default async function AdminAssinantesPage() {
                           </span>
                         </td>
                         <td className="py-4 px-6 text-sm text-muted-foreground">
-                          {subscriber.confirmedAt ? new Date(subscriber.confirmedAt).toLocaleDateString("pt-BR") : "-"}
+                          {subscriber.confirmed_at ? new Date(subscriber.confirmed_at).toLocaleDateString("pt-BR") : "-"}
                         </td>
                         <td className="py-4 px-6 text-sm text-muted-foreground">
-                          {new Date(subscriber.createdAt).toLocaleDateString("pt-BR")}
+                          {new Date(subscriber.created_at).toLocaleDateString("pt-BR")}
                         </td>
                       </tr>
                     ))}

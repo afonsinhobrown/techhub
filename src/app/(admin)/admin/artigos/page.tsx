@@ -1,7 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, Eye } from "lucide-react";
@@ -72,7 +72,7 @@ export default async function AdminArtigosPage() {
                           {article.views || 0}
                         </td>
                         <td className="py-4 px-6 text-sm text-muted-foreground">
-                          {new Date(article.createdAt).toLocaleDateString("pt-BR")}
+                          {new Date(article.created_at).toLocaleDateString("pt-BR")}
                         </td>
                         <td className="py-4 px-6">
                           <div className="flex items-center justify-end gap-2">

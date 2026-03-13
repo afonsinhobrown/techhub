@@ -51,7 +51,7 @@ export default async function ProductsPage() {
                     description={product.description}
                     price={product.price}
                     type={product.type}
-                    imageUrl={product.imageUrl}
+                    imageUrl={product.image_url}
                   />
                 ))}
               </div>

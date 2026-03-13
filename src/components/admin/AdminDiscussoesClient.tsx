@@ -63,7 +63,7 @@ type Discussion = {
   content: string;
   excerpt: string | null;
   category: string;
-  authorName: string;
+  author_name: string;
   replies: number;
   likes: number;
   views: number;
@@ -301,7 +301,7 @@ export function AdminDiscussoesClient({ initialDiscussions }: AdminDiscussoesCli
                         </p>
 
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span>Por: {discussion.authorName}</span>
+                          <span>Por: {discussion.author_name}</span>
                           <span className="flex items-center gap-1">
                             <MessageCircle className="w-3 h-3" />
                             {discussion.replies}
@@ -360,7 +360,7 @@ export function AdminDiscussoesClient({ initialDiscussions }: AdminDiscussoesCli
                                 <Label>Nome do Autor</Label>
                                 <Input
                                   name="authorName"
-                                  defaultValue={discussion.authorName}
+                                  defaultValue={discussion.author_name}
                                   required
                                 />
                               </div>

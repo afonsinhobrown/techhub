@@ -10,12 +10,12 @@ export async function getAdminStats() {
     purchasesCount,
     totalRevenue,
   ] = await Promise.all([
-    db.article.count(),
-    db.product.count({ where: { active: true } }),
-    db.podcastEpisode.count(),
-    db.subscriber.count({ where: { confirmed: true } }),
-    db.purchase.count({ where: { status: "paid" } }),
-    db.purchase.aggregate({
+    db.articles.count(),
+    db.products.count({ where: { active: true } }),
+    db.podcast_episodes.count(),
+    db.subscribers.count({ where: { confirmed: true } }),
+    db.purchases.count({ where: { status: "paid" } }),
+    db.purchases.aggregate({
       where: { status: "paid" },
       _sum: { amount: true },
     }),
@@ -33,9 +33,9 @@ export async function getAdminStats() {
 
 // Articles
 export async function getAdminArticles() {
-  return db.article.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { author: { select: { name: true, email: true } } },
+  return db.articles.findMany({
+    orderBy: { created_at: "desc" },
+    include: { profiles: { select: { name: true, email: true } } },
   });
 }
 
@@ -49,7 +49,21 @@ export async function createArticle(data: {
   published?: boolean;
   authorId: string;
 }) {
-  return db.article.create({ data });
+  const id = `art_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  return db.articles.create({
+    data: {
+      id,
+      title: data.title,
+      slug: data.slug,
+      content: data.content,
+      excerpt: data.excerpt,
+      cover_image: data.coverImage,
+      category: data.category,
+      published: data.published ?? false,
+      author_id: data.authorId,
+      updated_at: new Date(),
+    },
+  });
 }
 
 export async function updateArticle(
@@ -65,17 +79,30 @@ export async function updateArticle(
     publishedAt?: Date;
   }
 ) {
-  return db.article.update({ where: { id }, data });
+  return db.articles.update({
+    where: { id },
+    data: {
+      title: data.title,
+      slug: data.slug,
+      content: data.content,
+      excerpt: data.excerpt,
+      cover_image: data.coverImage,
+      category: data.category,
+      published: data.published,
+      published_at: data.publishedAt,
+      updated_at: new Date(),
+    },
+  });
 }
 
 export async function deleteArticle(id: string) {
-  return db.article.delete({ where: { id } });
+  return db.articles.delete({ where: { id } });
 }
 
 // Products Admin
 export async function getAdminProducts() {
-  return db.product.findMany({
-    orderBy: { createdAt: "desc" },
+  return db.products.findMany({
+    orderBy: { created_at: "desc" },
     include: {
       _count: { select: { purchases: true } },
     },
@@ -92,7 +119,21 @@ export async function createProduct(data: {
   imageUrl?: string;
   active?: boolean;
 }) {
-  return db.product.create({ data });
+  const id = `prod_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  return db.products.create({
+    data: {
+      id,
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      price_id_stripe: data.priceIdStripe,
+      type: data.type,
+      file_url: data.fileUrl,
+      image_url: data.imageUrl,
+      active: data.active ?? true,
+      updated_at: new Date(),
+    },
+  });
 }
 
 export async function updateProduct(
@@ -108,27 +149,40 @@ export async function updateProduct(
     active?: boolean;
   }
 ) {
-  return db.product.update({ where: { id }, data });
+  return db.products.update({
+    where: { id },
+    data: {
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      price_id_stripe: data.priceIdStripe,
+      type: data.type,
+      file_url: data.fileUrl,
+      image_url: data.imageUrl,
+      active: data.active,
+      updated_at: new Date(),
+    },
+  });
 }
 
 export async function deleteProduct(id: string) {
-  return db.product.delete({ where: { id } });
+  return db.products.delete({ where: { id } });
 }
 
 // Subscribers
 export async function getAdminSubscribers() {
-  return db.subscriber.findMany({
-    orderBy: { createdAt: "desc" },
+  return db.subscribers.findMany({
+    orderBy: { created_at: "desc" },
   });
 }
 
 // Purchases
 export async function getAdminPurchases() {
-  return db.purchase.findMany({
-    orderBy: { createdAt: "desc" },
+  return db.purchases.findMany({
+    orderBy: { created_at: "desc" },
     include: {
-      user: { select: { name: true, email: true } },
-      product: { select: { name: true, type: true } },
+      profiles: { select: { name: true, email: true } },
+      products: { select: { name: true, type: true } },
     },
   });
 }

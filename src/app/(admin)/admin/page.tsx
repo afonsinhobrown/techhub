@@ -213,7 +213,7 @@ export default async function AdminDashboard() {
                           </span>
                         </td>
                         <td className="py-3 text-sm text-muted-foreground">
-                          {new Date(sub.createdAt).toLocaleDateString("pt-BR")}
+                          {new Date(sub.created_at).toLocaleDateString("pt-BR")}
                         </td>
                       </tr>
                     ))}

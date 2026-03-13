@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if email already exists
-    const existing = await db.subscriber.findUnique({
+    const existing = await db.subscribers.findUnique({
       where: { email },
     });
 
@@ -36,8 +36,10 @@ export async function POST(request: NextRequest) {
 
     // Create new subscriber
     const token = randomUUID();
-    await db.subscriber.create({
+    const id = `sub_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    await db.subscribers.create({
       data: {
+        id,
         email,
         name: name || null,
         token,
@@ -47,11 +49,11 @@ export async function POST(request: NextRequest) {
 
     // In production, send confirmation email here
     // For now, auto-confirm for demo
-    await db.subscriber.update({
+    await db.subscribers.update({
       where: { email },
       data: {
         confirmed: true,
-        confirmedAt: new Date(),
+        confirmed_at: new Date(),
       },
     });
 
@@ -79,7 +81,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const subscriber = await db.subscriber.findFirst({
+  const subscriber = await db.subscribers.findFirst({
     where: { token },
   });
 
@@ -90,11 +92,11 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  await db.subscriber.update({
+  await db.subscribers.update({
     where: { id: subscriber.id },
     data: {
       confirmed: true,
-      confirmedAt: new Date(),
+      confirmed_at: new Date(),
     },
   });
 
