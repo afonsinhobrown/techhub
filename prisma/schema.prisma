@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model articles {
+  id           String    @id
+  title        String
+  slug         String    @unique
+  content      String?
+  excerpt      String?
+  cover_image  String?
+  category     String
+  published    Boolean   @default(false)
+  published_at DateTime?
+  author_id    String
+  views        Int       @default(0)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime
+  profiles     profiles  @relation(fields: [author_id], references: [id])
+}
+
+model discussions {
+  id          String   @id
+  title       String
+  content     String
+  excerpt     String?
+  category    String
+  author_name String
+  author_id   String?
+  replies     Int      @default(0)
+  likes       Int      @default(0)
+  views       Int      @default(0)
+  pinned      Boolean  @default(false)
+  locked      Boolean  @default(false)
+  published   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime
+}
+
+model podcast_episodes {
+  id             String    @id
+  title          String
+  description    String?
+  audio_url      String?
+  spotify_url    String?
+  apple_url      String?
+  duration       Int?
+  episode_number Int
+  published_at   DateTime?
+  created_at     DateTime  @default(now())
+}
+
+model products {
+  id              String      @id
+  name            String
+  description     String?
+  price           Float
+  price_id_stripe String?
+  type            String
+  file_url        String?
+  image_url       String?
+  active          Boolean     @default(true)
+  created_at      DateTime    @default(now())
+  updated_at      DateTime
+  purchases       purchases[]
+}
+
+model profiles {
+  id         String      @id
+  email      String      @unique
+  name       String?
+  avatar_url String?
+  role       String      @default("user")
+  created_at DateTime    @default(now())
+  updated_at DateTime
+  articles   articles[]
+  purchases  purchases[]
+}
+
+model purchases {
+  id                String    @id
+  user_id           String
+  product_id        String
+  stripe_session_id String?
+  status            String
+  amount            Float
+  created_at        DateTime  @default(now())
+  paid_at           DateTime?
+  products          products  @relation(fields: [product_id], references: [id])
+  profiles          profiles  @relation(fields: [user_id], references: [id])
+}
+
+model subscribers {
+  id           String    @id
+  email        String    @unique
+  name         String?
+  confirmed    Boolean   @default(false)
+  token        String?
+  created_at   DateTime  @default(now())
+  confirmed_at DateTime?
+}
