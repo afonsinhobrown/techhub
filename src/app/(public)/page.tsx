@@ -10,6 +10,9 @@ import { DiscussionsFeed } from "@/components/home/DiscussionsFeed";
 import { PodcastPreview } from "@/components/home/PodcastPreview";
 import { getAllPosts } from "@/lib/blog";
 
+// Forçar renderização dinâmica para buscar dados sempre atualizados
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "TechHub - Tecnologia, IA e Comunidade",
   description:
