@@ -1,37 +1,42 @@
-"use client";
-
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ShoppingBag, ArrowRight, FileCode, Video, Users } from "lucide-react";
+import { ShoppingBag, ArrowRight, FileCode, Video, Users, Lock } from "lucide-react";
+import { db } from "@/lib/db";
 
-const products = [
-  {
-    type: "Sistema",
-    title: "SaaS Starter Kit",
-    description: "Template completo para criar seu SaaS em tempo recorde",
-    price: "R$ 197",
-    icon: FileCode,
-  },
-  {
-    type: "Curso",
-    title: "TypeScript Avançado",
-    description: "Domine TypeScript e eleve o nível do seu código",
-    price: "R$ 297",
-    icon: Video,
-  },
-  {
-    type: "Consultoria",
-    title: "Mentoria 1:1",
-    description: "Sessões personalizadas para acelerar sua carreira",
-    price: "R$ 500/h",
-    icon: Users,
-  },
-];
+const typeIcons: Record<string, React.ReactNode> = {
+  software: <FileCode className="w-6 h-6 text-green-400" />,
+  course: <Video className="w-6 h-6 text-green-400" />,
+  consulting: <Users className="w-6 h-6 text-green-400" />,
+};
 
-export function ProductsHighlight() {
+const typeLabels: Record<string, string> = {
+  software: "Sistema",
+  course: "Curso",
+  consulting: "Consultoria",
+};
+
+export async function ProductsHighlight() {
+  // Buscar produtos ativos do banco
+  const allProducts = await db.products.findMany({
+    where: { active: true },
+    orderBy: { created_at: "desc" },
+    take: 6,
+  });
+
+  // Se não há produtos, não mostrar a seção
+  if (allProducts.length === 0) {
+    return null;
+  }
+
+  // Mostrar 3 públicos, o resto fica bloqueado
+  const visibleCount = 3;
+  const visible = allProducts.slice(0, visibleCount);
+  const hasLocked = allProducts.length > visibleCount;
+  const lockedCount = allProducts.length - visibleCount;
+
   return (
-    <section className="py-16 md:py-24">
+    <section className="py-16 md:py-24 bg-card border-y border-border">
       <div className="container px-4 mx-auto max-w-7xl">
         <div className="flex items-center justify-between mb-12">
           <div>
@@ -39,41 +44,39 @@ export function ProductsHighlight() {
               Produtos em Destaque
             </h2>
             <p className="text-muted-foreground">
-              Soluções criadas para acelerar sua evolução
+              Soluções criadas para acelerar tua evolução
             </p>
           </div>
-          <Link href="/produtos" className="hidden md:block">
-            <Button variant="outline" className="gap-2">
-              Ver todos
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {products.map((product, i) => (
+          {visible.map((product) => (
             <Card
-              key={i}
-              className="bg-card border-border hover:border-green-500/50 transition-all duration-300 group"
+              key={product.id}
+              className="bg-background border-border hover:border-green-500/50 transition-all duration-300 group"
             >
               <CardContent className="p-6">
                 <div className="w-12 h-12 rounded-xl bg-green-600/20 flex items-center justify-center mb-4">
-                  <product.icon className="w-6 h-6 text-green-400" />
+                  {typeIcons[product.type] || <ShoppingBag className="w-6 h-6 text-green-400" />}
                 </div>
 
-                <p className="text-sm text-green-400 mb-2">{product.type}</p>
+                <p className="text-sm text-green-400 mb-2">
+                  {typeLabels[product.type] || product.type}
+                </p>
 
                 <h3 className="text-xl font-bold mb-2 group-hover:text-green-400 transition-colors">
-                  {product.title}
+                  {product.name}
                 </h3>
 
-                <p className="text-muted-foreground mb-4">
-                  {product.description}
+                <p className="text-muted-foreground mb-4 line-clamp-2">
+                  {product.description || "Sem descrição"}
                 </p>
 
                 <div className="flex items-center justify-between">
-                  <p className="text-2xl font-bold">{product.price}</p>
-                  <Link href="/produtos">
+                  <p className="text-2xl font-bold text-green-400">
+                    MT {product.price.toLocaleString("pt-MZ", { minimumFractionDigits: 2 })}
+                  </p>
+                  <Link href={`/produtos/${product.id}`}>
                     <Button variant="ghost" size="sm" className="gap-1 text-green-400 hover:text-green-300 hover:bg-green-600/10">
                       <ShoppingBag className="w-4 h-4" />
                       Ver
@@ -85,14 +88,42 @@ export function ProductsHighlight() {
           ))}
         </div>
 
-        <div className="mt-8 text-center md:hidden">
-          <Link href="/produtos">
-            <Button variant="outline" className="gap-2">
-              Ver todos os produtos
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
-        </div>
+        {/* Locked Products - Requires Login */}
+        {hasLocked && (
+          <Card className="bg-background border-border relative overflow-hidden mt-6">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-600/10 to-purple-500/10 backdrop-blur-sm z-10" />
+            <CardContent className="p-6 relative z-20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                    <Lock className="w-6 h-6 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="font-medium mb-1">
+                      +{lockedCount} produtos disponíveis
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Faça login ou cadastre-se para ver todos os produtos
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Link href="/login">
+                    <Button variant="outline" size="sm">
+                      Entrar
+                    </Button>
+                  </Link>
+                  <Link href="/registro">
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      Cadastrar
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </section>
   );

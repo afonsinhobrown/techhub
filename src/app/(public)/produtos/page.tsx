@@ -4,6 +4,9 @@ import { Footer } from "@/components/layout/Footer";
 import { ProductCard } from "@/components/products/ProductCard";
 import { getProducts } from "@/lib/products";
 
+// Forçar renderização dinâmica para dados atualizados
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Produtos | TechHub",
   description:
