@@ -50,6 +50,7 @@ model podcast_episodes {
   audio_url      String?
   spotify_url    String?
   apple_url      String?
+  youtube_url    String?
   duration       Int?
   episode_number Int
   published_at   DateTime?
