@@ -23,26 +23,47 @@ import Link from "next/link";
 export default function NovoProdutoPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState("");
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setLoading(true);
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get("name"),
+      description: formData.get("description") || null,
+      price: parseFloat(formData.get("price") as string) || 0,
+      type: selectedType,
+      image_url: formData.get("image_url") || null,
+      file_url: formData.get("file_url") || null,
+    };
+
+    if (!data.name || !data.price || !data.type) {
+      setError("Nome, preço e tipo são obrigatórios");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/admin/products", {
         method: "POST",
-        body: JSON.stringify({
-          name: formData.get("name"),
-          description: formData.get("description"),
-          price: parseFloat(formData.get("price") as string),
-          type: formData.get("type"),
-          image_url: formData.get("image_url"),
-          file_url: formData.get("file_url"),
-        }),
+        body: JSON.stringify(data),
         headers: { "Content-Type": "application/json" },
       });
 
+      const result = await res.json();
+
       if (res.ok) {
         router.push("/admin/produtos");
+        router.refresh();
+      } else {
+        setError(result.error || "Erro ao criar produto");
       }
+    } catch (err) {
+      setError("Erro de conexão");
     } finally {
       setLoading(false);
     }
@@ -63,9 +84,15 @@ export default function NovoProdutoPage() {
 
           <h1 className="text-3xl font-bold mb-8">Novo Produto</h1>
 
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded-lg mb-6">
+              {error}
+            </div>
+          )}
+
           <Card className="bg-card border-border max-w-2xl">
             <CardContent className="p-6">
-              <form action={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="name">Nome *</Label>
                   <Input id="name" name="name" required placeholder="Nome do produto" />
@@ -78,7 +105,7 @@ export default function NovoProdutoPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="type">Tipo *</Label>
-                    <Select name="type" required>
+                    <Select name="type" required value={selectedType} onValueChange={setSelectedType}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione" />
                       </SelectTrigger>

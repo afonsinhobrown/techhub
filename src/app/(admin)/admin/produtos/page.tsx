@@ -9,6 +9,10 @@ import Link from "next/link";
 import { getAdminProducts } from "@/lib/admin";
 import { db } from "@/lib/db";
 
+// Forçar renderização dinâmica - SEM CACHE
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const typeLabels: Record<string, string> = {
   software: "Sistema",
   course: "Curso",
@@ -24,6 +28,7 @@ export default async function AdminProdutosPage() {
   let products: any[] = [];
   try {
     products = await getAdminProducts();
+    console.log("Produtos carregados:", products.length, products.map(p => p.name));
   } catch (error) {
     console.error("Erro ao carregar produtos:", error);
   }

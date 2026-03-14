@@ -113,12 +113,19 @@ export async function deleteArticle(id: string) {
 
 // Products Admin
 export async function getAdminProducts() {
-  return db.products.findMany({
-    orderBy: { created_at: "desc" },
-    include: {
-      _count: { select: { purchases: true } },
-    },
-  });
+  try {
+    const products = await db.products.findMany({
+      orderBy: { created_at: "desc" },
+      include: {
+        _count: { select: { purchases: true } },
+      },
+    });
+    console.log("getAdminProducts - produtos encontrados:", products.length);
+    return products;
+  } catch (error) {
+    console.error("Erro em getAdminProducts:", error);
+    return [];
+  }
 }
 
 export async function createProduct(data: {
