@@ -116,7 +116,7 @@ export default async function AdminDashboard() {
                   <div>
                     <p className="text-sm text-muted-foreground">Faturamento Total</p>
                     <p className="text-3xl font-bold text-green-400">
-                      R$ {stats.totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      MT {stats.totalRevenue.toLocaleString("pt-MZ", { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                 </div>
@@ -175,7 +175,7 @@ export default async function AdminDashboard() {
                       <p className="text-sm text-muted-foreground capitalize">{product.type}</p>
                     </div>
                     <p className="font-bold text-green-400">
-                      R$ {product.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      MT {product.price.toLocaleString("pt-MZ", { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                 ))}

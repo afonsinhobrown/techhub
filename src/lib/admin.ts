@@ -2,33 +2,45 @@ import { db } from "@/lib/db";
 
 // Stats
 export async function getAdminStats() {
-  const [
-    articlesCount,
-    productsCount,
-    episodesCount,
-    subscribersCount,
-    purchasesCount,
-    totalRevenue,
-  ] = await Promise.all([
-    db.articles.count(),
-    db.products.count({ where: { active: true } }),
-    db.podcast_episodes.count(),
-    db.subscribers.count({ where: { confirmed: true } }),
-    db.purchases.count({ where: { status: "paid" } }),
-    db.purchases.aggregate({
-      where: { status: "paid" },
-      _sum: { amount: true },
-    }),
-  ]);
+  try {
+    const [
+      articlesCount,
+      productsCount,
+      episodesCount,
+      subscribersCount,
+      purchasesCount,
+      totalRevenue,
+    ] = await Promise.all([
+      db.articles.count(),
+      db.products.count({ where: { active: true } }),
+      db.podcast_episodes.count(),
+      db.subscribers.count({ where: { confirmed: true } }),
+      db.purchases.count({ where: { status: "paid" } }),
+      db.purchases.aggregate({
+        where: { status: "paid" },
+        _sum: { amount: true },
+      }),
+    ]);
 
-  return {
-    articlesCount,
-    productsCount,
-    episodesCount,
-    subscribersCount,
-    purchasesCount,
-    totalRevenue: totalRevenue._sum.amount || 0,
-  };
+    return {
+      articlesCount,
+      productsCount,
+      episodesCount,
+      subscribersCount,
+      purchasesCount,
+      totalRevenue: totalRevenue._sum.amount || 0,
+    };
+  } catch (error) {
+    console.error("Erro ao buscar stats:", error);
+    return {
+      articlesCount: 0,
+      productsCount: 0,
+      episodesCount: 0,
+      subscribersCount: 0,
+      purchasesCount: 0,
+      totalRevenue: 0,
+    };
+  }
 }
 
 // Articles

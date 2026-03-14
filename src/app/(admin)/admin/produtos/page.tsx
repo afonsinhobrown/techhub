@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, Eye } from "lucide-react";
 import Link from "next/link";
-import { getAdminProducts, deleteProduct } from "@/lib/admin";
+import { getAdminProducts } from "@/lib/admin";
+import { db } from "@/lib/db";
 
 const typeLabels: Record<string, string> = {
   software: "Sistema",
@@ -14,8 +15,18 @@ const typeLabels: Record<string, string> = {
   consulting: "Consultoria",
 };
 
+async function deleteProduct(id: string) {
+  "use server";
+  await db.products.delete({ where: { id } });
+}
+
 export default async function AdminProdutosPage() {
-  const products = await getAdminProducts();
+  let products: any[] = [];
+  try {
+    products = await getAdminProducts();
+  } catch (error) {
+    console.error("Erro ao carregar produtos:", error);
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -68,10 +79,10 @@ export default async function AdminProdutosPage() {
 
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-2xl font-bold text-green-400">
-                      R$ {product.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      MT {product.price.toLocaleString("pt-MZ", { minimumFractionDigits: 2 })}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {product._count.purchases} vendas
+                      {product._count?.purchases || 0} vendas
                     </p>
                   </div>
 
